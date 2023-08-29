@@ -25,18 +25,34 @@ for (const name in inventory) {
 console.log('\n--- Assignment 1 ---------------------------------------')
 
 function makeOptions(inv, prop) {
-  return 'TODO';
+  return Object.keys(inv).filter(item => inv[item][prop] === true)
+    .map(item => `<option value="${item}">${item}, ${inv[item].price}kr</option>`)
 }
 
+//todo figure out why should use reduce and why example output is only first 2 options
 console.log(makeOptions(inventory, 'foundation'));
+
 
 console.log('\n--- Assignment 2 ---------------------------------------')
 class Salad {
   constructor() { }
-  add(name, properties) { }
-  remove(name) { }
+  add(name, properties) {
+    this[name] = properties;
+    return this;
+  }
+  remove(name) { 
+    delete this[name];
+    return this;
+  }
+  getPrice() {
+    return Object.keys(this).reduce((acc, item) => acc + this[item].price, 0);
+  }
+  count(prop) {
+    return Object.keys(this).filter(item => this[item][prop] === true).length;
+  }
+
 }
-/*
+
 let myCaesarSalad = new Salad()
   .add('Sallad', inventory['Sallad'])
   .add('Kycklingfilé', inventory['Kycklingfilé'])
@@ -48,16 +64,15 @@ let myCaesarSalad = new Salad()
 console.log(JSON.stringify(myCaesarSalad) + '\n');
 myCaesarSalad.remove('Gurka');
 console.log(JSON.stringify(myCaesarSalad) + '\n');
-*/
-console.log('\n--- Assignment 3 ---------------------------------------')
-//console.log('En ceasarsallad kostar ' + myCaesarSalad.getPrice() + 'kr');
-// En ceasarsallad kostar 45kr
-//console.log('En ceasarsallad har ' + myCaesarSalad.count('lactose') + ' ingredienser med laktos');
-// En ceasarsallad har 2 ingredienser med laktos
-//console.log('En ceasarsallad har ' + myCaesarSalad.count('extra') + ' tillbehör');
-// En ceasarsallad har 3 tillbehör
 
-/*
+console.log('\n--- Assignment 3 ---------------------------------------')
+console.log('En ceasarsallad kostar ' + myCaesarSalad.getPrice() + 'kr');
+//En ceasarsallad kostar 45kr
+console.log('En ceasarsallad har ' + myCaesarSalad.count('lactose') + ' ingredienser med laktos');
+//En ceasarsallad har 2 ingredienser med laktos
+console.log('En ceasarsallad har ' + myCaesarSalad.count('extra') + ' tillbehör');
+//En ceasarsallad har 3 tillbehör
+
 console.log('\n--- reflection question 3 ---------------------------------------')
 console.log('typeof Salad: ' + typeof Salad);
 console.log('typeof Salad.prototype: ' + typeof Salad.prototype);
@@ -67,7 +82,7 @@ console.log('typeof myCaesarSalad.prototype: ' + typeof myCaesarSalad.prototype)
 console.log('check 1: ' + (Salad.prototype === Object.getPrototypeOf(Salad)));
 console.log('check 2: ' + (Salad.prototype === Object.getPrototypeOf(myCaesarSalad)));
 console.log('check 3: ' + (Object.prototype === Object.getPrototypeOf(Salad.prototype)));
-*/
+
 console.log('\n--- Assignment 4 ---------------------------------------')
 /*
 const singleText = JSON.stringify(myCaesarSalad);
