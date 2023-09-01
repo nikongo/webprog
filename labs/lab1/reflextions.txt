@@ -1,0 +1,16 @@
+1. undefined is not truthy
+
+2. for in includes inherited properties
+
+3. 
+Having a proptotype chain means properties are inherited. 
+Only constructor functions have the prototype prop
+This prop is put in the instance chains
+
+4. static properties are stored in the prototype object
+
+5. yes
+Object.defineProperty(this, 'id', { value: Salad.instanceCounter++, enumerable: true, writable: false });
+
+
+6. yes if using es2020 with #

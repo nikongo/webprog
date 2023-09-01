@@ -5,6 +5,8 @@
  */
 
 import inventory from './inventory.mjs';
+import { v4 as uuidv4 } from 'uuid';
+
 console.log('\n=== beginning of printout ================================')
 console.log('inventory:', inventory);
 
@@ -22,6 +24,7 @@ for (const name in inventory) {
  * Reflection question 2
  */
 
+
 console.log('\n--- Assignment 1 ---------------------------------------')
 
 function makeOptions(inv, prop) {
@@ -35,7 +38,21 @@ console.log(makeOptions(inventory, 'foundation'));
 
 console.log('\n--- Assignment 2 ---------------------------------------')
 class Salad {
-  constructor() { }
+  static instanceCounter = 0;
+  
+  constructor(salad) {
+    if (salad) {
+      Object.keys(salad).forEach(item => this[item] = salad[item]);
+    }
+    Object.defineProperty(this, 'id', { value: Salad.instanceCounter++, writable: false });
+    Object.defineProperty(this, 'uuid', { value: uuidv4(), writable: false });
+  }
+
+  static parse(salad) {
+    const parsed = JSON.parse(salad);
+    return Array.isArray(parsed) ? parsed.map(salad => new Salad(salad)) : new Salad(parsed);
+  }
+
   add(name, properties) {
     this[name] = properties;
     return this;
@@ -50,6 +67,25 @@ class Salad {
   count(prop) {
     return Object.keys(this).filter(item => this[item][prop] === true).length;
   }
+
+}
+
+
+class GourmetSalad extends Salad {
+
+  add(name, properties, size = 1) {
+    if (this[name]) {
+      this[name].size += size;
+    } else {
+      super.add(name, {...properties, size});
+    }
+    return this;
+  }
+
+  getPrice() {
+    return Object.keys(this).reduce((acc, item) => acc + this[item].price * this[item].size, 0);
+  }
+
 
 }
 
@@ -84,7 +120,7 @@ console.log('check 2: ' + (Salad.prototype === Object.getPrototypeOf(myCaesarSal
 console.log('check 3: ' + (Object.prototype === Object.getPrototypeOf(Salad.prototype)));
 
 console.log('\n--- Assignment 4 ---------------------------------------')
-/*
+
 const singleText = JSON.stringify(myCaesarSalad);
 const arrayText = JSON.stringify([myCaesarSalad, myCaesarSalad]);
 
@@ -100,9 +136,8 @@ console.log('Salad.parse(arrayText)\n' + JSON.stringify(arrayCopy));
 singleCopy.add('Gurka', inventory['Gurka']);
 console.log('originalet kostar ' + myCaesarSalad.getPrice() + ' kr');
 console.log('kopian med gurka kostar ' + singleCopy.getPrice() + ' kr');
-*/
+
 console.log('\n--- Assignment 5 ---------------------------------------')
-/*
 let myGourmetSalad = new GourmetSalad()
   .add('Sallad', inventory['Sallad'], 0.5)
   .add('Kycklingfilé', inventory['Kycklingfilé'], 2)
@@ -113,12 +148,12 @@ let myGourmetSalad = new GourmetSalad()
 console.log('Min gourmetsallad med lite bacon kostar ' + myGourmetSalad.getPrice() + ' kr');
 myGourmetSalad.add('Bacon', inventory['Bacon'], 1)
 console.log('Med extra bacon kostar den ' + myGourmetSalad.getPrice() + ' kr');
-*/
+
 console.log('\n--- Assignment 6 ---------------------------------------')
-/*
+
 console.log('Min gourmetsallad har id: ' + myGourmetSalad.id);
 console.log('Min gourmetsallad har uuid: ' + myGourmetSalad.uuid);
-*/
+
 
 /**
  * Reflection question 4
