@@ -28,7 +28,12 @@ function ComposeSalad(props) {
   function handleSubmit(e) {
     e.preventDefault();
 
-    props.addSalad(new Salad({ foundation, protein, dressing, ...extra }));
+    props.addSalad(new Salad({ 
+      foundation: { name: foundation, ...props.inventory[foundation]}, 
+      protein: { name: protein, ...props.inventory[protein]},
+      dressing: { name: dressing, ...props.inventory[dressing]},
+      ...Object.keys(extra).filter(name => extra[name]).reduce((acc, name) => ({ ...acc, [name]: {name, ...props.inventory[name] }}), {})
+    }));
 
     setFoundation('Pasta');
     setProtein('Kycklingfilé');

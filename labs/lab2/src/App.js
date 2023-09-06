@@ -3,6 +3,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import inventory from './inventory.ES6';
 import ComposeSalad from './ComposeSalad';
 import { useState } from 'react';
+import ViewOrder from './ViewOrder';
 
 function App() {
   const [cart, setCart] = useState([]);
@@ -13,8 +14,8 @@ function App() {
         <span className="fs-4">Min egen salladsbar</span>
       </header>
 
-      <div>
-        {JSON.stringify(cart)}
+      <div className="continer col-12">
+        <ViewOrder cart={cart}/>
       </div>
 
       <div className="continer col-12">

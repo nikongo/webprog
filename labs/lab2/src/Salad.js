@@ -17,13 +17,16 @@ export default class Salad {
     this[name] = properties;
     return this;
   }
+
   remove(name) {
     delete this[name];
     return this;
   }
+
   getPrice() {
-    return Object.keys(this).reduce((acc, item) => acc + this[item].price, 0);
+    return Object.keys(this).reduce((acc, key) => acc + this[key].price, 0);
   }
+
   count(prop) {
     return Object.keys(this).filter(item => this[item][prop] === true).length;
   }
