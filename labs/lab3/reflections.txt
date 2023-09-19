@@ -1,0 +1,9 @@
+1. It will rerender the component when it's dependencies change.
+
+2. Yes you can using the dependency array in useEffect. But it's inefficient and not recommended to do so when we use the `useState` function.
+
+3. State changes.
+
+4. Only if we call the `setX` function.
+
+5. undefined
