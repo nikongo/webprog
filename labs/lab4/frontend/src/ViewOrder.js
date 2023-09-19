@@ -1,8 +1,24 @@
 import React from 'react';
-import { useOutletContext, Outlet } from 'react-router-dom';
+import { useOutletContext, Outlet, useNavigate } from 'react-router-dom';
+import Salad from './Salad';
 
 export default function ViewOrder() {
   const props = useOutletContext();
+  const navigate = useNavigate();
+
+  async function handleSubmit(e) {
+    e.preventDefault();
+    fetch('http://localhost:8080/orders', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(props.cart.map(salad => Object.keys(salad).map(key => salad[key].name))),
+    }).then(res => 
+      navigate(`/view-order/confirm/${res.id}`),
+    )
+
+  }
 
   return (
     <>
@@ -18,12 +34,13 @@ export default function ViewOrder() {
                 <p> <strong> Protein: </strong> {salad['protein'].name}</p>
                 <p> <strong> Dressing: </strong> {salad['dressing'].name}</p>
                 <p> <strong> Tillbehör: </strong> {Object.keys(salad).filter(key => salad[key].extra).map(k => salad[k].name).join(', ')}</p>
-                <p> <strong> Pris: </strong> {salad.getPrice()} kr</p>
+                <p> <strong> Pris: </strong> {new Salad(salad).getPrice()} kr</p>
               </div>
             ))}
           </div>
         </div>
       </div>
+      <button className="btn btn-primary mt-3" type="submit" onClick={handleSubmit}>Betala</button>
     </>
   )
 }

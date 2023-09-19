@@ -1,12 +1,60 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { NavLink, Outlet } from 'react-router-dom';
-import inventory from './inventory.ES6';
+import useLocalStorage from './useLocalStorage';
+
+async function safeFetchJson(url){
+  return fetch(url)
+    .then(response => {
+      if(!response.ok){
+        throw new Error(`${response.status} ${response.statusText}`);
+      }
+      return response.json();
+    })
+}
+
+async function fetchIngredient(type, ingredient) {
+  return ingredient ?
+    safeFetchJson(`http://localhost:8080/${type}/${ingredient}`) :
+    safeFetchJson(`http://localhost:8080/${type}`) 
+}
+
+async function fetchIngredients(categoryName) {
+  const category = await safeFetchJson(`http://localhost:8080/${categoryName}`);
+  const bob = await Promise.all(category.map(async f => {
+    const found = await fetchIngredient(`${categoryName}`, f);
+    return {
+      [f] : {
+        name: f, 
+        ...found
+      } 
+    };
+  }));
+ 
+  return bob.reduce((acc, curr) => ({...acc, ...curr}), {});
+}
 
 function App() {
-  const [cart, setCart] = useState([]);
+  const [cart, setCart] = useLocalStorage('cart', []);
+  const [inventory, setInventory] = useLocalStorage('inventory', {});
+  useEffect(() => {
+    Promise.all([
+      fetchIngredients('foundations'),
+      fetchIngredients('proteins'),
+      fetchIngredients('extras'),
+      fetchIngredients('dressings'),
+    ]).then(([foundations, proteins, extras, dressings]) => {
+      console.log(foundations);
+      setInventory({
+        ...foundations,
+        ...proteins,
+        ...extras,
+        ...dressings,
+      });
+    });
+  }, [setInventory]);
 
   function handleAddSalad(salad) {
     setCart(cart.concat([salad]));

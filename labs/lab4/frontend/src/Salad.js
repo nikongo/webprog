@@ -1,6 +1,7 @@
 import { v4 as uuid } from 'uuid';
 
 export default class Salad {
+  
   constructor(salad) {
     if (salad) {
       Object.keys(salad).forEach(item => this[item] = salad[item]);
@@ -29,5 +30,9 @@ export default class Salad {
 
   count(prop) {
     return Object.keys(this).filter(item => this[item][prop] === true).length;
+  }
+
+  getIngredientNames() {
+    return Object.keys(this);
   }
 }
