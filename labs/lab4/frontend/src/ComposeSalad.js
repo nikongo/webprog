@@ -1,6 +1,6 @@
 import Salad from './Salad';
-import useLocalStorage from './useLocalStorage';
 import { useOutletContext, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 
 function SaladSelect({ value, onChange, values, ...props }) {
   return (
@@ -25,10 +25,10 @@ function ComposeSalad() {
   const dressings = inventory.filter(name => props.inventory[name].dressing);
   const extras = inventory.filter(name => props.inventory[name].extra);
 
-  const [foundation, setFoundation] = useLocalStorage('foundation','');
-  const [protein, setProtein] = useLocalStorage('protein','');
-  const [dressing, setDressing] = useLocalStorage('dressing','');
-  const [extra, setExtra] = useLocalStorage('extra',{});
+  const [foundation, setFoundation] = useState('');
+  const [protein, setProtein] = useState('');
+  const [dressing, setDressing] = useState('');
+  const [extra, setExtra] = useState({});
 
 
   function reset(e) {
