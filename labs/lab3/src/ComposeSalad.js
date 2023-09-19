@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import Salad from './Salad';
+import { useOutletContext, useNavigate } from 'react-router-dom';
 
-function SaladSelect({ value, onChange, values }) {
+function SaladSelect({ value, onChange, values, ...props }) {
   return (
-    <select value={value} onChange={e => onChange(e.target.value)} className="form-select">
+    <select value={value} onChange={e => onChange(e.target.value)} className="form-select" {...props}>
+      <option value="">Välj...</option>
       {values.map(name => (
         <option key={name} value={name}>
           {name}
@@ -13,47 +15,63 @@ function SaladSelect({ value, onChange, values }) {
   )
 }
 
-function ComposeSalad(props) {
+function ComposeSalad() {
+  const props = useOutletContext();
+  const navigate = useNavigate();
+
   const inventory = Object.keys(props.inventory);
   const foundations = inventory.filter(name => props.inventory[name].foundation);
   const proteins = inventory.filter(name => props.inventory[name].protein);
   const dressings = inventory.filter(name => props.inventory[name].dressing);
   const extras = inventory.filter(name => props.inventory[name].extra);
 
-  const [foundation, setFoundation] = useState('Pasta');
-  const [protein, setProtein] = useState('Kycklingfilé');
-  const [dressing, setDressing] = useState('Ceasardressing');
-  const [extra, setExtra] = useState({ Bacon: true, Fetaost: true });
+  const [foundation, setFoundation] = useState('');
+  const [protein, setProtein] = useState('');
+  const [dressing, setDressing] = useState('');
+  const [extra, setExtra] = useState({});
+
+  function reset(e) {
+    setFoundation('');
+    setProtein('');
+    setDressing('');
+    setExtra({});
+    e.target.classList.remove('was-validated');
+  }
 
   function handleSubmit(e) {
     e.preventDefault();
 
-    props.addSalad(new Salad({ 
-      foundation: { name: foundation, ...props.inventory[foundation]}, 
-      protein: { name: protein, ...props.inventory[protein]},
-      dressing: { name: dressing, ...props.inventory[dressing]},
-      ...Object.keys(extra).filter(name => extra[name]).reduce((acc, name) => ({ ...acc, [name]: {name, ...props.inventory[name] }}), {})
-    }));
+    e.target.classList.add('was-validated');
 
-    setFoundation('Pasta');
-    setProtein('Kycklingfilé');
-    setDressing('Ceasardressing');
-    setExtra({ Bacon: true, Fetaost: true });
+    if (!e.target.checkValidity()) return;
+
+    const salad = new Salad({
+      foundation: { name: foundation, ...props.inventory[foundation] },
+      protein: { name: protein, ...props.inventory[protein] },
+      dressing: { name: dressing, ...props.inventory[dressing] },
+      ...Object.keys(extra).filter(name => extra[name]).reduce((acc, name) => ({ ...acc, [name]: { name, ...props.inventory[name] } }), {})
+    })
+
+    props.handleAddSalad(salad);
+
+    reset(e);
+
+    navigate(`/view-order/confirm/${salad.id}`);
   }
 
   return (
     <div className="container col-12">
       <div className="row h-200 p-5 bg-light border rounded-3">
         <h2>Välj innehållet i din sallad</h2>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} noValidate>
           <div className="mb-3">
             <label className="form-label">Välj bas</label>
-            <SaladSelect value={foundation} onChange={setFoundation} values={foundations} />
+            <SaladSelect value={foundation} onChange={setFoundation} values={foundations} required />
           </div>
 
           <div className="mb-3">
             <label className="form-label">Välj protein</label>
-            <SaladSelect value={protein} onChange={setProtein} values={proteins} />
+            <SaladSelect value={protein} onChange={setProtein} values={proteins} required />
           </div>
 
           <span className="form-label">Välj tillbehör</span>
@@ -74,7 +92,7 @@ function ComposeSalad(props) {
 
           <div className="mb-3">
             <label className="form-label">Välj dressing</label>
-            <SaladSelect value={dressing} onChange={setDressing} values={dressings} />
+            <SaladSelect value={dressing} onChange={setDressing} values={dressings} required />
           </div>
 
           <button className="btn btn-primary" type="submit">Beställ</button>
